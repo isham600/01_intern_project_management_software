@@ -1,13 +1,11 @@
+import AppRoutes from "./components/routes/AppRoutes";
 
 function App() {
   return (
-    <>
-      <div>
-           hello world
-      </div>
- 
-    </>
-  )
+    <div className="min-h-screen bg-gray-100">
+      <AppRoutes />
+    </div>
+  );
 }
-
-export default App
+export default App;
+ 
