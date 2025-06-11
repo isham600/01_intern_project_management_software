@@ -1,0 +1,262 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+/* App container */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading and error states */
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #dc3545;
+}
+
+/* Header styles */
+.header {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Button styles */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ProjectList styles */
+.project-list {
+  flex: 0 0 280px; /* Do not grow, do not shrink, fixed width of 280px */
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+
+/* Kanban Board styles */
+.kanban-board {
+  display: flex;
+  flex-grow: 1; /* Allow the board to take up remaining space */
+  gap: 20px;
+  justify-content: center; /* Center the columns if there's extra space */
+  align-items: flex-start; /* Align columns to the top */
+}
+
+/* KanbanBoard container style */
+.kanban-board-container {
+  flex-grow: 1; /* Allows the Kanban board to take up remaining horizontal space */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between header and the board columns */
+}
+
+/* Kanban Board Header (search and add task button) */
+.kanban-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* Space below the header */
+}
+
+.kanban-header .search-input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  margin-right: 15px; /* Space between search input and add task button */
+}
+
+.kanban-header button {
+  padding: 10px 20px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+/* Column styles */
+.column {
+  background-color: #f4f5f7; /* Light grey background for columns */
+  border-radius: 8px;
+  padding: 15px;
+  min-width: 280px; /* Minimum width for columns */
+  max-width: 300px; /* Maximum width for columns */
+  flex: 1; /* Allow columns to grow and shrink */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.column h2 {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+  color: #172b4d;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and title */
+}
+
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Card styles */
+.card {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 0 rgba(9,30,66,.25);
+  padding: 10px;
+  cursor: grab;
+  margin-bottom: 8px; /* Space between cards */
+  word-wrap: break-word; /* Ensures long text breaks to the next line */
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card h3 {
+  font-size: 0.95em;
+  color: #172b4d;
+  margin-bottom: 5px;
+}
+
+.card p {
+  font-size: 0.85em;
+  color: #5e6c84;
+  margin-bottom: 5px;
+}
+
+.card-actions button {
+  background-color: #e2e4e6;
+  color: #172b4d;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 0.8em;
+}
+
+.card-actions button:hover {
+  background-color: #cdd2d8;
+}
+
+.card-edit-form input,
+.card-edit-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.card-edit-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.card-edit-form button {
+  padding: 8px 15px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.card-edit-form button:first-of-type {
+  background-color: #007bff;
+  color: white;
+}
+
+.card-edit-form button:last-of-type {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Board layout */
+.board-layout-container {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  align-items: flex-start; /* Aligns items to the top of the container */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+}
+
+/* Create Project Form styles */
+.create-project-form input[type="text"],
+.create-project-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #dfe1e6;
+  border-radius: 5px;
+  font-size: 0.9em;
+  box-sizing: border-box; /* Ensures padding doesn't increase total width */
+}
+
+.create-project-form input::placeholder,
+.create-project-form textarea::placeholder {
+  color: #7a869a;
+}
+
+/* Project Edit Input styles */
+.project-edit-input {
+  flex-grow: 1;
+  margin-right: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 1em;
+}
+
+.create-project-form button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px; /* Space between buttons */
+  background-color: #0052cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.create-project-form button[type="button"] {
+  background-color: #6b778c; /* Grey background for Cancel button */
+} 
