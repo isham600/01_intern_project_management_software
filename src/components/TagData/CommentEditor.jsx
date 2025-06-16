@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState,useEffect } from "react";
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -17,6 +17,7 @@ import {
   AlignCenterOutlined,
   AlignRightOutlined,
   MenuOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -36,6 +37,32 @@ const CommentEditor = () => {
   const editorRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const [activeTab, setActiveTab] = useState("comment");
+  const [comments, setComments] = useState([]); 
+
+  const fetchComments = async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/comments");
+    setComments(res.data || []);
+  } catch (err) {
+    message.error("Failed to fetch comments");
+  }
+};
+
+useEffect(() => {
+  fetchComments(); // fetch on mount
+}, []);
+
+
+const handleDeleteComment = async (id) => {
+  try {
+    await axios.delete(`http://localhost:3000/api/comments/${id}`);
+    message.success("Comment deleted");
+    fetchComments(); // refresh the list
+  } catch (err) {
+    message.error("Failed to delete comment");
+  }
+};
+
 
   const execCommand = (command, value = null) => {
     if (command === "createLink" && !value) return;
@@ -63,15 +90,15 @@ const CommentEditor = () => {
     }
 
     const formData = new FormData();
-    formData.append("comment", content);
+    formData.append("message", content);
 
     fileList.forEach((file) => {
-      formData.append("attachments", file.originFileObj);
+      formData.append("files", file.originFileObj);
     });
 
     try {
       const response = await axios.post(
-        "http://your-api-url.com/api/comments", // replace with your endpoint
+        `http://localhost:3000/api/comments`, 
         formData,
         {
           headers: {
@@ -82,6 +109,7 @@ const CommentEditor = () => {
       message.success("Comment submitted!");
       editorRef.current.innerHTML = "";
       setFileList([]);
+      fetchComments();
     } catch (error) {
       console.error(error);
       message.error("Failed to submit comment.");
@@ -115,7 +143,7 @@ const CommentEditor = () => {
       {activeTab === "comment" && (
         <>
           <div className="flex items-center px-2 border-b gap-1 flex-wrap">
-            <Dropdown overlay={paragraphMenu} trigger={["click"]}>
+            <Dropdown menu={paragraphMenu} trigger={["click"]}>
               <Button size="small" className="!rounded-none text-xs">
                 Paragraph
               </Button>
@@ -192,8 +220,8 @@ const CommentEditor = () => {
       {activeTab === "activity" && (
         <div className="px-4 py-2 text-sm space-y-4">
           <div>
-            <b className="text-purple-600">Raunak Singh</b>{" "}
-            <span className="text-gray-500">11 Jun 2025 22:48</span>
+            <b className="text-purple-600">shubham singh</b>{" "}
+            <span className="text-gray-500">{Date()}</span>
             <div>
               <Tag color="blue">description</Tag>{" "}
               <a href="#" className="text-blue-600 underline">
@@ -202,8 +230,8 @@ const CommentEditor = () => {
             </div>
           </div>
           <div>
-            <b className="text-purple-600">Raunak Singh</b>{" "}
-            <span className="text-gray-500">11 Jun 2025 22:30</span>
+            <b className="text-purple-600">shubham singh</b>{" "}
+            <span className="text-gray-500">{Date()}</span>
             <div>
               <Tag color="red">deleted attachment:</Tag>{" "}
               <span>about-4.png</span>
@@ -211,6 +239,52 @@ const CommentEditor = () => {
           </div>
         </div>
       )}
+      <div className="px-4 py-3 border-t mt-4 bg-white rounded-md shadow-sm space-y-4">
+  <h3 className="text-md font-semibold text-gray-700 mb-2">All Comments</h3>
+  {comments.length === 0 ? (
+    <p className="text-gray-500 text-sm">No comments yet.</p>
+  ) : (
+    comments.map((comment) => (
+     <div
+  key={comment._id}
+  className="relative bg-gray-50 border border-gray-200 p-3 rounded shadow-sm space-y-2"
+>
+  <Button
+    type="text"
+    size="small"
+    icon={<DeleteOutlined />}
+    onClick={() => handleDeleteComment(comment._id)}
+    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+  />
+
+  {/* Rich text */}
+  <div
+    className="prose prose-sm max-w-none text-gray-800"
+    dangerouslySetInnerHTML={{ __html: comment.message }}
+  />
+
+  {/* Attachments */}
+  {comment.attachments?.length > 0 && (
+    <div className="flex gap-2 flex-wrap">
+      {comment.attachments.map((file, idx) => (
+        <a
+          key={idx}
+          href={`http://localhost:3000/${file.path}`}
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-600 underline text-sm"
+        >
+          📎 {file.originalName}
+        </a>
+      ))}
+    </div>
+  )}
+</div>
+
+    ))
+  )}
+</div>
+
     </div>
   );
 };

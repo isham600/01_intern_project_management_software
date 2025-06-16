@@ -3,7 +3,7 @@ import { Input, Tag, Button, Tooltip, message } from "antd";
 import { SaveOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 
-const API_BASE = "http://your-api-url.com"; // <-- Replace with your actual API base URL
+
 
 const presetColors = [
   "#f5222d", "#eb2f96", "#722ed1", "#2f54eb", "#52c41a",
@@ -26,22 +26,23 @@ const TagManager = () => {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/api/tags`);
-      setTags(response.data || []); // Expecting data in format: [{ id, label, color }]
+      const response = await axios.get(`http://localhost:3000/api/tags/`);
+       setTags(response.data || []);
     } catch (err) {
       message.error("Failed to load tags from API");
     }
   };
 
   const handleAdd = async () => {
+   
     const label = input.trim();
     const finalColor = customColor || color;
-    if (!label || tags.find(tag => tag.label === label)) return;
+    if (!label || tags.find(tag => tag._label === label)) return;
 
     try {
       const newTag = { label, color: finalColor };
-      const response = await axios.post(`${API_BASE}/api/tags`, newTag);
-      setTags([...tags, response.data]); // Assuming response returns new tag with ID
+      const response = await axios.post(`http://localhost:3000/api/tags/`, newTag);
+      setTags([...tags, response.data.tag]); 
       setInput("");
       setCustomColor("");
       setShowColors(false);
@@ -54,8 +55,8 @@ const TagManager = () => {
 
   const handleRemove = async (id) => {
     try {
-      await axios.delete(`${API_BASE}/api/tags/${id}`);
-      setTags(tags.filter(tag => tag.id !== id));
+      await axios.delete(`http://localhost:3000/api/tags/${id}`);
+      setTags(tags.filter(tag => tag._id !== id));
       message.success("Tag removed");
     } catch (err) {
       message.error("Failed to remove tag");
@@ -68,10 +69,10 @@ const TagManager = () => {
       <div className="flex flex-wrap gap-2 mb-4">
         {tags.map((tag) => (
           <Tag
-            key={tag.id}
+            key={tag._id}
             color={tag.color}
             closable
-            onClose={() => handleRemove(tag.id)}
+            onClose={() => handleRemove(tag._id)}
             closeIcon={<CloseOutlined />}
             className="text-white font-normal"
           >
@@ -124,8 +125,8 @@ const TagManager = () => {
         {/* Creator Info */}
         <div className="flex items-center text-right text-md text-[#0aaf78] ml-4 space-x-3">
           <div>
-            <p>Created by Shubham Singh</p>
-            <p className="text-[#474545]">07 Jun 2025 10:32</p>
+            <p>Created At </p>
+              <p className="text-[#474545]">{Date()}</p>
           </div>
           <img
             src="https://i.pravatar.cc/40"
@@ -138,9 +139,9 @@ const TagManager = () => {
       {/* Color Picker Grid */}
       {showColors && inputVisible && (
         <div className="absolute z-10 mt-2 border rounded shadow bg-white p-2 grid grid-cols-10 gap-1">
-          {presetColors.map((clr, idx) => (
+          {presetColors.map((clr) => (
             <div
-              key={idx}
+              key={clr}
               className={`w-6 h-6 rounded cursor-pointer border ${
                 (customColor || color) === clr ? "border-black" : "border-transparent"
               }`}

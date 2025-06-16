@@ -29,7 +29,7 @@ const TaskInputPanel = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await axios.get("/api/tasks");
+      const res = await axios.get("http://localhost:3000/api/tasks");
       setTasks(res.data.data || []);
     } catch (err) {
       message.error("Failed to load tasks.");
@@ -39,7 +39,7 @@ const TaskInputPanel = () => {
   const handleSave = async () => {
     if (!taskName.trim()) return;
     try {
-      const res = await axios.post("/api/tasks", {
+      const res = await axios.post("http://localhost:3000/api/tasks", {
         name: taskName.trim(),
         status,
       });
@@ -53,14 +53,14 @@ const TaskInputPanel = () => {
     }
   };
 
-  const handleEditSave = async (id) => {
+  const handleEditSave = async (_id) => {
     try {
-      const res = await axios.put(`/api/tasks/${id}`, {
+      const res = await axios.put(`http://localhost:3000/api/tasks/${_id}`, {
         name: editingName.trim(),
       });
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === id ? { ...task, name: res.data.data.name } : task
+          task._id === _id ? { ...task, name: res.data.data.name } : task
         )
       );
       setEditingId(null);
@@ -71,21 +71,23 @@ const TaskInputPanel = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (_id) => {
     try {
-      await axios.delete(`/api/tasks/${id}`);
-      setTasks(tasks.filter((task) => task.id !== id));
+      await axios.delete(`http://localhost:3000/api/tasks/${_id}`);
+      setTasks(tasks.filter((task) => task._id !== _id));
       message.success("Task deleted.");
     } catch (err) {
       message.error("Failed to delete task.");
     }
   };
 
-  const updateStatus = async (id, newStatus) => {
+  const updateStatus = async (_id, newStatus) => {
     try {
-      await axios.patch(`/api/tasks/${id}/status`, { status: newStatus });
+      await axios.patch(`http://localhost:3000/api/tasks/${_id}/status`, {
+        status: newStatus,
+      });
       setTasks((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
+        prev.map((t) => (t._id === _id ? { ...t, status: newStatus } : t))
       );
     } catch (err) {
       message.error("Failed to update status.");
@@ -93,7 +95,7 @@ const TaskInputPanel = () => {
   };
 
   return (
-    <div className="bg-[#f1f5f9] p-3 rounded-md shadow-sm relative max-w-4xl">
+    <div className="bg-[#f1f5f9] p-3 rounded-md shadow-sm relative max-w-4xl mx-4">
       <div className="flex justify-between items-center">
         <span className="text-sm font-semibold text-gray-800">Tasks</span>
         {!showInput && (
@@ -140,12 +142,12 @@ const TaskInputPanel = () => {
 
       {tasks.map((task) => (
         <div
-          key={task.id}
+          key={task._id}
           className="group mt-2 flex items-center justify-between bg-[#d1e7e5] px-3 py-2 rounded-md"
         >
           <div className="flex items-center gap-3 w-full">
             <span className="cursor-move text-gray-500">::</span>
-            {editingId === task.id ? (
+            {editingId === task._id ? (
               <Input
                 size="small"
                 value={editingName}
@@ -155,30 +157,32 @@ const TaskInputPanel = () => {
             ) : (
               <span
                 className="text-sm text-blue-800 font-medium cursor-pointer"
-                onClick={() => navigate("/tasks", { state: { id: task.id, name: task.name } })}
+                onClick={() =>
+                  navigate("/tasks", { state: { id: task._id, name: task.name } })
+                }
               >
-                #{task.id} {task.name}
+                #{task._id} {task.name}
               </span>
             )}
 
             <div className="hidden group-hover:flex gap-2 items-center">
-              {editingId === task.id ? (
+              {editingId === task._id ? (
                 <SaveOutlined
                   className="text-gray-500 cursor-pointer"
-                  onClick={() => handleEditSave(task.id)}
+                  onClick={() => handleEditSave(task._id)}
                 />
               ) : (
                 <EditOutlined
                   className="text-gray-500 cursor-pointer"
                   onClick={() => {
-                    setEditingId(task.id);
+                    setEditingId(task._id);
                     setEditingName(task.name);
                   }}
                 />
               )}
               <DeleteOutlined
                 className="text-gray-500 cursor-pointer"
-                onClick={() => handleDelete(task.id)}
+                onClick={() => handleDelete(task._id)}
               />
             </div>
 
@@ -186,7 +190,7 @@ const TaskInputPanel = () => {
               size="small"
               value={task.status}
               className="w-32"
-              onChange={(val) => updateStatus(task.id, val)}
+              onChange={(val) => updateStatus(task._id, val)}
             >
               <Option value="New">New</Option>
               <Option value="In Progress">In progress</Option>
@@ -195,7 +199,7 @@ const TaskInputPanel = () => {
 
             <div className="flex items-center gap-1 ml-auto">
               <Avatar size="small" icon={<UserOutlined />} className="bg-white border" />
-              <span className="text-sm text-gray-700">Not assig...</span>
+              <span className="text-sm text-gray-700">Not assigned</span>
             </div>
           </div>
         </div>
@@ -205,6 +209,8 @@ const TaskInputPanel = () => {
 };
 
 export default TaskInputPanel;
+
+
 
 
 // import React, { useState } from "react";

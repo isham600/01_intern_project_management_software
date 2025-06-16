@@ -19,8 +19,8 @@ const AttachmentBar2 = () => {
 
   const fetchAttachments = async () => {
     try {
-      const res = await axios.get('/api/attachments');
-      // Ensure attachments is an array from the API
+      const res = await axios.get('http://localhost:3000/api/attachments');
+      
       const files = res.data?.data || res.data || [];
       setAttachments(Array.isArray(files) ? files : []);
     } catch (err) {
@@ -29,29 +29,30 @@ const AttachmentBar2 = () => {
     }
   };
 
-  const handleUpload = async ({ file, onSuccess, onError }) => {
-    const formData = new FormData();
-    formData.append('file', file);
+ const handleUpload = async ({ file, onSuccess, onError }) => {
+  const formData = new FormData();
+  formData.append('file', file);
 
-    try {
-      const res = await axios.post('/api/attachments', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+  try {
+    const res = await axios.post('http://localhost:3000/api/attachments', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
 
-      const newAttachment = res.data?.data || res.data;
-      setAttachments((prev) => [...prev, newAttachment]);
-      onSuccess('ok');
-      message.success('Uploaded successfully');
-    } catch (error) {
-      onError(error);
-      message.error('Upload failed');
-    }
-  };
+    const newAttachment = res.data?.file; 
+    setAttachments((prev) => [...prev, newAttachment]);
+    onSuccess('ok');
+    message.success('Uploaded successfully');
+  } catch (error) {
+    onError(error);
+    message.error('Upload failed');
+  }
+};
+
 
   const handleRemove = async (id) => {
     try {
-      await axios.delete(`/api/attachments/${id}`);
-      setAttachments((prev) => prev.filter((item) => item.id !== id));
+      await axios.delete(`http://localhost:3000/api/attachments/${id}`);
+      setAttachments((prev) => prev.filter((item) => item._id !== id));
       message.success('Deleted');
     } catch (err) {
       message.error('Delete failed');
@@ -115,22 +116,22 @@ const AttachmentBar2 = () => {
         <div className="grid grid-cols-5 gap-4">
           {attachments.map((img, idx) => (
             <div
-              key={img.id}
+              key={img._id}
               className="group relative flex flex-col items-center bg-white p-3 rounded-md shadow-sm transition-all duration-300 hover:shadow-md"
             >
               <img
-                src={img.url}
-                alt={`attachment-${idx}`}
-                onClick={() => setPreview(img.url)}
+                src={`http://localhost:3000/${img.path}`}
+                alt={img.originalName}
+                onClick={() => setPreview(`http://localhost:3000/${img.path}`)}
                 className="w-28 h-28 object-cover rounded cursor-pointer transition-all duration-500 grayscale group-hover:grayscale-0 group-hover:scale-105"
               />
               <p className="text-gray-600 text-xs mt-2 text-center break-all">
-                {img.name}
+                {img.originalName}
               </p>
               <Button
                 type="text"
                 icon={<DeleteOutlined className="text-red-400 hover:text-red-600" />}
-                onClick={() => handleRemove(img.id)}
+                onClick={() => handleRemove(img._id)}
                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               />
             </div>
@@ -140,19 +141,19 @@ const AttachmentBar2 = () => {
         <div className="flex flex-col gap-2">
           {attachments.map((img) => (
             <div
-              key={img.id}
+              key={img._id}
               className="flex justify-between items-center bg-white px-4 py-2 rounded shadow-sm transition-all hover:shadow-md"
             >
               <span
-                onClick={() => setPreview(img.url)}
+                onClick={() => setPreview(`http://localhost:3000/${img.path}`)}
                 className="text-green-700 text-sm hover:underline break-all cursor-pointer"
               >
-                {img.name}
+                {img.originalName}
               </span>
               <Button
                 type="text"
                 icon={<DeleteOutlined className="text-red-400 hover:text-red-600" />}
-                onClick={() => handleRemove(img.id)}
+                onClick={() => handleRemove(img._id)}
               />
             </div>
           ))}
@@ -172,3 +173,4 @@ const AttachmentBar2 = () => {
 };
 
 export default AttachmentBar2;
+

@@ -3,7 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import TagDetails from './components/TagData/TagDetails';
-import TaskDetails from './components/TaskData/TaskDetails';
+import TaskDetails from './components/TaskData/TaskDetail'
 
 function App() {
   return (
